@@ -1,4 +1,5 @@
-﻿using ETicaret.Models;
+﻿using ETicaret.Dto;
+using ETicaret.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
 using System.Data.SqlClient;
@@ -8,7 +9,7 @@ namespace ETicaret.Controllers
 {
     public class HomeController : Controller
     {
-        SqlConnection connection=new SqlConnection("Server=EMRE\\SQLEXPRESS01; Database=EticaretDemoDb;Integrated Security=true");
+        Context con= new Context();
 
         [HttpGet]
         public IActionResult Index()
@@ -33,25 +34,36 @@ namespace ETicaret.Controllers
         [HttpGet]
         public IActionResult Home()
         {
-            SqlDataAdapter adapter = new SqlDataAdapter("Select * From Urunler",connection);
-            DataTable dataTable = new DataTable();
-            dataTable.Clear();
-            adapter.Fill(dataTable);
-            List<Urunler> urunlerim=new List<Urunler>();
-            foreach (DataRow row in dataTable.Rows)
-            {
-                urunlerim.Add(new Urunler
-                {
-                    Id = Convert.ToInt32(row["Id"]),
-                    UrunAdi = row["Urunadi"].ToString(),
-                    Resim = row["Resim"].ToString(),
-                    BirimFiyati = Convert.ToDecimal(row["BirimFiyati"])
+            //SqlDataAdapter adapter = new SqlDataAdapter("Select * From Urunler",connection);
+            //DataTable dataTable = new DataTable();
+            //dataTable.Clear();
+            //adapter.Fill(dataTable);
+            //List<Urun> urunlerim=new List<Urun>();
+            //foreach (DataRow row in dataTable.Rows)
+            //{
+            //    urunlerim.Add(new Urun
+            //    {
+            //        Id = Convert.ToInt32(row["Id"]),
+            //        UrunAdi = row["Urunadi"].ToString(),
+            //        Resim = row["Resim"].ToString(),
+            //        BirimFiyati = Convert.ToDecimal(row["BirimFiyati"])
 
 
-                });
+            //    });
 
-            }
-            return View(urunlerim);
+            //}
+            List<Urun> urunlerim = new List<Urun>();
+            urunlerim = con.Urunler.ToList();
+
+            List<Sepet> sepetlerim= new List<Sepet>();
+            sepetlerim =con.Sepetim.ToList();
+
+            HomeDto list = new HomeDto();    
+
+            list.Urunlerim = urunlerim;
+            list.Sepetim = sepetlerim;
+
+            return View(list);
         }
 
       
