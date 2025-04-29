@@ -66,6 +66,49 @@ namespace ETicaret.Controllers
             return View(list);
         }
 
-      
+
+
+        [HttpPost]
+        public IActionResult SepeteEkle(int id,int adet)
+        {
+            Urun urun =con.Urunler.Where(p=> p.Id == id).FirstOrDefault();
+            Sepet sepet = new Sepet();
+            sepet.UrunAdi = urun.UrunAdi;
+            sepet.BirimFiyati = urun.BirimFiyati;
+            sepet.Adet = adet;
+            sepet.Toplam = sepet.Adet * sepet.BirimFiyati;
+
+            con.Sepetim.Add(sepet);
+            con.SaveChanges();
+            return RedirectToAction("Home", "Home");
+        }
+
+        [HttpPost]
+        public IActionResult SepettekiUrunuSil(int id) 
+        {
+
+            Sepet sepet=con.Sepetim.Where(p=> p.Id == id).FirstOrDefault();
+            con.Sepetim.Remove(sepet);
+            con.SaveChanges();
+            return RedirectToAction("Home", "Home");
+           
+        }
+
+        [HttpPost]
+        public IActionResult OdemeYap()
+        {
+            var result = con.Sepetim.ToList();
+            foreach (var item in result)
+            {
+                con.Sepetim.Remove(item);
+                con.SaveChanges();
+            }
+            TempData["odeme"] = "Ödeme Başarılı";
+
+            return RedirectToAction("Home", "Home");
+
+        }
+
+
     }
 }
